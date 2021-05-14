@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var bodyParser = require('body-parser');
 
 var config = require('../config/config');
 require('./models/user');
@@ -57,12 +58,12 @@ connect();
 module.exports = app;
 
 function connect() {
-  mongoose.connection
-    .on('error', console.log)
-    .on('disconnected', connect)
-  return mongoose.connect(config.mongodb_uri, {
-    keepAlive: true,
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  });
+    mongoose.connect(config.mongodb_uri, {
+        auth:{authdb:"admin"},
+        keepAlive: true,
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    });
+    console.log('Connect to mongodb');
+    return;
 }

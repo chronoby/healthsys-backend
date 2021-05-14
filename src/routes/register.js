@@ -1,10 +1,11 @@
 var express = require('express');
+var userController = require('../controllers/user');
+var checkDuplicatePhong = require('../middleware/verifySignup')
+
 var router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-  next;
-});
+router.post(
+    '/',
+    userController.register);
 
 module.exports = router;

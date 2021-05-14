@@ -4,8 +4,8 @@ var router = express.Router();
 // info, passward
 
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-  next;
+    res.send('respond with a resource');
+    next;
 });
 
 module.exports = router;
