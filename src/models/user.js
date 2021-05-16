@@ -11,7 +11,8 @@ const UserSchema = new Schema({
     username: String,
     encrypted_password: String,
     type: String,
-    gender: Number
+    gender: Number,
+    status: Boolean
 });
 
 UserSchema.methods = {

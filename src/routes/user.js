@@ -1,11 +1,10 @@
 var express = require('express');
 var router = express.Router();
+var authJwt = require('../middleware/authJwt');
+var userController = require('../controllers/user');
 
-// info, passward
+router.post('/updateinfo', authJwt.verifyToken, authJwt.getPermission, userController.updateUserInfo);
 
-router.get('/', function(req, res, next) {
-    res.send('respond with a resource');
-    next;
-});
+router.post('/updatepassword', authJwt.verifyToken, userController.updatePassword);
 
 module.exports = router;

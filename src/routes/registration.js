@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-  next;
-});
+var regController = require('../controllers/registration');
+var authJwt = require('../middleware/authJwt')
+
+router.get('/', authJwt.verifyToken, authJwt.getPermission, regController.queryRegistrationInfo);
+router.post('/', regController.createRegistration);
 
 module.exports = router;

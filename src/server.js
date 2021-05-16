@@ -8,6 +8,8 @@ var bodyParser = require('body-parser');
 var config = require('../config/config');
 require('./models/user');
 require('./models/doctor');
+require('./models/availableDoctor');
+require('./models/registration')
 
 var indexRouter = require('./routes/index');
 var loginRouter = require('./routes/login');

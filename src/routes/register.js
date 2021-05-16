@@ -4,8 +4,6 @@ var verifySignup = require('../middleware/verifySignup')
 
 var router = express.Router();
 
-router.post(
-    '/',
-    verifySignup.checkDuplicatePhong,
-    userController.register);
+router.post('/', verifySignup.checkDuplicatePhong, userController.register);
+
 module.exports = router;

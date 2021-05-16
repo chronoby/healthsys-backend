@@ -1,12 +1,13 @@
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const config = require('../../config/config')
 
 const User = mongoose.model('user');
 const Doctor = mongoose.model('doctor');
-const Admin = mongoose.model('admin');
+//const Admin = mongoose.model('admin');
 
 verifyToken = (req, res, next) => {
-    var token = req.headers['x-access-token'];
+    var token = req.headers['token'];
     if(!token) {
         res.status(403).send({ message: 'No token privided'});
         return;
