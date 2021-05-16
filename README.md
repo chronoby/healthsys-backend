@@ -1,6 +1,6 @@
 # Backend
 
-Backend of project healthsys.
+Backend of project [healthsys](https://github.com/Ais0n/healthsys).
 
 ## Run
 
@@ -14,7 +14,7 @@ yarn start
 路由和函数的对应关系：
 
 router | get/post | function
-- | - | -
+:- | :- | :-
 /login | post | login
 /login | get | getLoginStatus
 /register | post | userRegister
