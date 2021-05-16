@@ -6,8 +6,8 @@ const bcrypt = require('bcrypt');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-    //_id: [{type: String, ref: 'doctor'}],
     _id: String,
+    doctor_id: {type: Schema.Types.ObjectId, ref: 'doctor'},
     username: String,
     encrypted_password: String,
     type: String,

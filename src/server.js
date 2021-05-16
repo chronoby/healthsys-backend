@@ -64,6 +64,6 @@ function connect() {
         useNewUrlParser: true,
         useUnifiedTopology: true
     });
-    console.log('Connect to mongodb');
+    console.log('Connect to mongodb successfully');
     return;
 }

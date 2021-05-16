@@ -5,12 +5,13 @@ const User = mongoose.model('user');
 const Doctor = mongoose.model('doctor');
 const config = require('../../config/config')
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
 
 exports.login = (req, res) => {
     User.findOne({
         _id: req.body.accountId
     })
-    .populate('doctor')
+    .populate('doctor_id')
     .exec((err, user) => {
         if (err) {
             console.log(err);
@@ -45,9 +46,9 @@ exports.login = (req, res) => {
             }
         };
         if(user.type == 'doctor') {
-            resObj.userData.hospitalName = user.doctor.hospital_name;
-            resObj.userData.keshi = user.doctor.department;
-            resObj.userData.zhicheng = user.doctor.rank;
+            resObj.userData.userInfo.hospitalName = user.doctor_id.hospital_name;
+            resObj.userData.userInfo.keshi = user.doctor_id.department;
+            resObj.userData.userInfo.zhicheng = user.doctor_id.rank;
         }
         res.status(200).send(resObj);
     })
@@ -55,37 +56,58 @@ exports.login = (req, res) => {
 };
 
 exports.register = (req, res) => {
-    const user = new User({
-        _id: req.body.userId,
-        username: req.body.userName,
-        type: req.body.userPermission,
-        gender: req.body.userInfo.xingbie,
-    });
-    user.encrypted_password = user.encryptPassword(req.body.password);
-    user.save((err, user) => {
-        if(err) {
-            res.status(500).send({registerData: {registerStatus: false, message: err}});
-            return;
-        }
-        if(req.body.userPermission == 'doctor') {
-            const doctor = new Doctor({
+    if(req.body.userPermission == 'user') {
+        const user = new User({
+            _id: req.body.userId,
+            username: req.body.userName,
+            type: req.body.userPermission,
+            gender: req.body.userInfo.xingbie,
+        });
+        user.encrypted_password = user.encryptPassword(req.body.password);
+        user.save((err, user) => {
+            if(err) {
+                res.status(500).send({registerData: {registerStatus: false, message: err}});
+                return;
+            } else {
+                res.send({registerData:{ registerStatus: true, message: "注册成功"}});
+            }
+        });
+    } else if(req.body.userPermission == 'doctor') {
+        const doctor = new Doctor({
+            _id: new mongoose.Types.ObjectId(),
+            hospital_name: req.body.userInfo.hospitalName,
+            department: req.body.userInfo.keshi,
+            rank: req.body.userInfo.zhicheng,
+            description: '',
+            status: false
+        });
+        doctor.save((err) => {
+            if(err) {
+                res.status(500).send({registerData: {registerStatus: false, message: err}});
+                return;
+            }
+            const user = new User({
                 _id: req.body.userId,
-                hospital_name: req.body.userInfo.hospitalName,
-                department: req.body.userInfo.keshi,
-                rank: req.body.userInfo.zhicheng,
-                description: '',
-                status: false
+                username: req.body.userName,
+                type: req.body.userPermission,
+                gender: req.body.userInfo.xingbie,
+                doctor_id: doctor._id
             });
-            doctor.save((err) => {
+            user.encrypted_password = user.encryptPassword(req.body.password);
+
+            user.save((err) => {
                 if(err) {
                     res.status(500).send({registerData: {registerStatus: false, message: err}});
                     return;
                 }
                 res.send({registerData: {registerStatus: true, message: "注册成功"}});
             });
-        } else {
-            res.send({registerData:{ registerStatus: true, message: "注册成功"}});
-        }
-    });
-    
+        });
+    }
+}
+
+exports.updateUserInfo = (req, res) => {
+    if(req.body.userId === '') {
+        
+    }
 }
