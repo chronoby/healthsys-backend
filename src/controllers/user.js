@@ -292,7 +292,6 @@ exports.queryDoctor = (req, res) => {
             return;
         }
         //console.log(users);
-        //return;
         var resObj = [];
         for(var i = 0; i < users.length; i++) {
             var tmp = users[i];
