@@ -34,4 +34,4 @@ router | get/post | function
 { "token": "xxx" }
 ```
 
-服务器据此进行身份认证.
+服务端据此进行身份认证.
