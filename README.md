@@ -2,12 +2,19 @@
 
 Backend of project [healthsys](https://github.com/Ais0n/healthsys).
 
-## Run
+## Available Script
 
-```
-yarn install
-yarn start
-```
+### `yarn install`
+
+Install the dependencies.
+
+### `yarn start`
+
+Run the app on `localhost:3000`.
+
+### `yarn deploy`
+
+Deploy on server using pm2. The app will be daemonized, monitored and kept alive forever.
 
 ## Interface
 
@@ -34,4 +41,4 @@ router | get/post | function
 { "token": "xxx" }
 ```
 
-服务器据此进行身份认证.
+服务端据此进行身份认证.
