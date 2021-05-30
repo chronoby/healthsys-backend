@@ -7,6 +7,7 @@
 var app = require('../src/server');
 var debug = require('debug')('app:server');
 var http = require('http');
+var cors = require('cors');
 
 /**
  * Get port from environment and store in Express.
@@ -14,7 +15,7 @@ var http = require('http');
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
-
+app.use(cors());
 /**
  * Create HTTP server.
  */
