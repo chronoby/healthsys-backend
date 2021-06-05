@@ -10,7 +10,7 @@ const jwt = require('jsonwebtoken')
 exports.login = (req, res) => {
     console.log(req.body)
     User.findOne({
-        _id: req.body.userd
+        _id: req.body.userId
     })
     .populate('doctor_id')
     .exec((err, user) => {
