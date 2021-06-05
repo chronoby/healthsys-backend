@@ -8,8 +8,9 @@ const config = require('../../config/config')
 const jwt = require('jsonwebtoken')
 
 exports.login = (req, res) => {
+    console.log(req.body)
     User.findOne({
-        _id: req.body.accountId
+        _id: req.body.userd
     })
     .populate('doctor_id')
     .exec((err, user) => {
@@ -19,12 +20,12 @@ exports.login = (req, res) => {
             return;
         }
         if(!user) {
-            res.status(404).send({ loginData: {loginStatus: false, message: "用户不存在" }});
+            res.status(200).send({ loginData: {loginStatus: false, message: "用户不存在" }});
             return;
         }
         var isPasswordTrue = user.authenticate(req.body.password);
         if(!isPasswordTrue) {
-            res.status(401).send({ loginData: {loginStatus: false, message: "密码错误" }});
+            res.status(200).send({ loginData: {loginStatus: false, message: "密码错误" }});
             return;
         }
         var token = jwt.sign({id: user._id}, config.token_secret_key, {
