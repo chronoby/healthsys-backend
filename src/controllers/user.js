@@ -97,6 +97,7 @@ exports.getLoginStatus = (req, res) => {
 };
 
 exports.register = (req, res) => {
+    console.log(req.body);
     if(req.body.userPermission == 'user' || req.body.userPermission == 'admin') {
         const user = new User({
             _id: req.body.userId,
