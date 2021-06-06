@@ -12,7 +12,7 @@ exports.checkDuplicatePhong = (req, res, next) => {
             return;
         }
         if(user) {
-            res.status(400).send({registerData: {registerStatus: false, message: "Error! Phong number duplicated."}});
+            res.status(200).send({registerData: {registerStatus: false, message: "错误：手机号已注册，请直接登录！"}});
             return;
         }
         next();
