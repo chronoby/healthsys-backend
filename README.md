@@ -24,6 +24,7 @@ router | get/post | function
 :- | :- | :-
 /login | post | login
 /login | get | getLoginStatus
+/logout | get | logout
 /register | post | userRegister
 /user/updateinfo | post | updateUserInfo
 /user/updatepassword | post | updatePassword

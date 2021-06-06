@@ -10,9 +10,11 @@ require('./models/user');
 require('./models/doctor');
 require('./models/availableDoctor');
 require('./models/registration')
+require('./models/blacklist')
 
 var indexRouter = require('./routes/index');
 var loginRouter = require('./routes/login');
+var logoutRouter = require('./routes/logout');
 var userRouter = require('./routes/user');
 var doctorRouter = require('./routes/doctor');
 var registerRouter = require('./routes/register');
@@ -38,6 +40,7 @@ app.use(function(req, res, next) {
 
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
+app.use('/logout', logoutRouter);
 app.use('/register', registerRouter);
 app.use('/user', userRouter);
 app.use('/doctor', doctorRouter);

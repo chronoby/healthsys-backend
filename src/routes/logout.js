@@ -4,7 +4,6 @@ var authJwt = require('../middleware/authJwt');
 
 var router = express.Router();
 
-router.get('/', authJwt.verifyTokenValidation, authJwt.verifyToken, userController.getLoginStatus);
-router.post('/', userController.login);
+router.get('/', authJwt.verifyToken, userController.logout);
 
 module.exports = router;

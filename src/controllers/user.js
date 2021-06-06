@@ -4,8 +4,9 @@ const mongoose = require('mongoose');
 const User = mongoose.model('user');
 const Doctor = mongoose.model('doctor');
 const AvailableDoctor = mongoose.model('available_doctor');
-const config = require('../../config/config')
-const jwt = require('jsonwebtoken')
+const Blacklist = mongoose.model('blacklist');
+const config = require('../../config/config');
+const jwt = require('jsonwebtoken');
 
 exports.login = (req, res) => {
     console.log(req.body)
@@ -94,6 +95,19 @@ exports.getLoginStatus = (req, res) => {
         res.status(200).send(resObj);
     })
 
+};
+
+exports.logout = (req, res) => {
+    const invalidToken = new Blacklist({
+        invalid_token: req.headers['token']
+    });
+    invalidToken.save((err, doc) => {
+        if(err) {
+            res.status(500).send({ logoutData: { logoutStatus: false, message: err }});
+            return;
+        }
+        res.status(200).send({ logoutData: { logoutStatus: true, message: "注销成功" }});
+    });
 };
 
 exports.register = (req, res) => {
@@ -227,7 +241,7 @@ exports.updatePassword = (req, res) => {
 
 exports.queryNewDoctor = (req, res) => {
     if(req.permissionInToken != 'admin') {
-        res.status(403).send({ queryData: { queryStatus: true, message: "无查询权限" }});
+        res.status(403).send({ queryData: { queryStatus: false, message: "无查询权限" }});
         return;
     }
     User.find({
@@ -236,7 +250,7 @@ exports.queryNewDoctor = (req, res) => {
     .populate('doctor_id')
     .exec((err, users) => {
         if (err) {
-            res.status(500).send({ queryData: {queryStatus: false, message: err }});
+            res.status(500).send({ queryData: { queryStatus: false, message: err }});
             return;
         }
         var resObj = [];
@@ -260,7 +274,7 @@ exports.queryNewDoctor = (req, res) => {
 
 exports.approveNewDoctor = (req, res) => {
     if(req.permissionInToken != 'admin') {
-        res.status(403).send({ updateData: { updateStatus: true, message: "无更新权限" }});
+        res.status(403).send({ updateData: { updateStatus: false, message: "无更新权限" }});
         return;
     }
     User.updateMany(
@@ -271,7 +285,7 @@ exports.approveNewDoctor = (req, res) => {
                 res.status(500).send({ updateData: { updateStatus: false, message: err }});
                 return;
             }
-            res.status(200).send({ updateData: { updateStatus: "true", message: "审核成功" }})
+            res.status(200).send({ updateData: { updateStatus: true, message: "审核成功" }})
         }
     )
 }
