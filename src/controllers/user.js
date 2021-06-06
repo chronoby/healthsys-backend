@@ -68,7 +68,7 @@ exports.getLoginStatus = (req, res) => {
             return;
         }
         if(!user) {
-            res.status(404).send({ loginData: {loginStatus: false, message: "用户不存在" }});
+            res.status(200).send({ loginData: {loginStatus: false, message: "用户不存在" }});
             return;
         }
         var resObj = {
