@@ -20,10 +20,10 @@ exports.createRegistration = (req, res) => {
     });
     registration.save((err, doc) => {
         if(err) {
-            res.status(500).send({registerData: {registerStatus: false, message: err}});
+            res.status(500).send({ status: false, message: err });
             return;
         }
-        res.status(200).send({registerData:{ registerStatus: true, message: "挂号成功", registrationId: doc._id}});
+        res.status(200).send({ status: true, message: "挂号成功", registerData: { registrationId: doc._id }});
     });
 }
 
@@ -37,10 +37,10 @@ exports.queryRegistrationInfo = (req, res) => {
     Registration.find(query)
     .exec((err, docs) => {
         if(err) {
-            res.status(500).send({queryData: {queryStatus: false, message: err}});
+            res.status(500).send({satus: false, message: err });
             return;
         }
-        var resObj = [];
+        var regs = [];
         for(var i = 0; i < docs.length; i++) {
             var tmp = docs[i];
             var tmpdoc = {
@@ -52,7 +52,12 @@ exports.queryRegistrationInfo = (req, res) => {
                 doctorId: tmp.doctor_id,
                 isFinished: tmp.is_finished
             }
-            resObj.push(tmpdoc);
+            regs.push(tmpdoc);
+        }
+        var resObj = {
+            status: true,
+		    message: "查询成功",
+		    registrationInfo: regs
         }
         res.status(200).send(resObj);
     });

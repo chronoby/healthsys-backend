@@ -10,12 +10,12 @@ const Blacklist = mongoose.model('blacklist')
 verifyToken = (req, res, next) => {
     var token = req.headers['token'];
     if(!token) {
-        res.status(403).send({ message: 'No token privided'});
+        res.status(403).send({ status: false, message: 'No token privided' });
         return;
     }
     jwt.verify(token, config.token_secret_key, (err, decoded) => {
         if(err) {
-            res.status(401).send({message: "Unauthorized!"});
+            res.status(401).send({ status: false, message: "Unauthorized!" });
             return;
         }
         req.idinToken = decoded.id;
@@ -26,16 +26,16 @@ verifyToken = (req, res, next) => {
 verifyTokenValidation = (req, res, next) => {
     var token = req.headers['token'];
     if(!token) {
-        res.status(403).send({ message: 'No token privided'});
+        res.status(403).send({ status: false, message: 'No token privided'});
         return;
     }
     Blacklist.findOne({invalid_token: token}).exec((err, doc) => {
         if(err) {
-            res.status(500).send({ message: err});
+            res.status(500).send({ status: false, message: err});
             return;
         }
         if(doc) {
-            res.status(403).send({ message: 'Token invalid' });
+            res.status(403).send({ status: false, message: 'Token invalid' });
             return;
         }
         next();
@@ -45,7 +45,7 @@ verifyTokenValidation = (req, res, next) => {
 getPermission = (req, res, next) => {
     User.findById(req.idinToken).exec((err, user) => {
         if(err) {
-            res.status(500).send({ message: err});
+            res.status(500).send({ status: false, message: err});
             return;
         }
         req.permissionInToken = user.type;

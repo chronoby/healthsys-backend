@@ -17,27 +17,25 @@ exports.login = (req, res) => {
     .exec((err, user) => {
         if (err) {
             console.log(err);
-            res.status(500).send({ loginData: {loginStatus: false, message: err }});
+            res.status(500).send({ status: false, message: err });
             return;
         }
         if(!user) {
-            res.status(200).send({ loginData: {loginStatus: false, message: "用户不存在" }});
+            res.status(200).send({ status: false, message: "用户不存在" });
             return;
         }
         var isPasswordTrue = user.authenticate(req.body.password);
         if(!isPasswordTrue) {
-            res.status(200).send({ loginData: {loginStatus: false, message: "密码错误" }});
+            res.status(200).send({ status: false, message: "密码错误" });
             return;
         }
         var token = jwt.sign({id: user._id}, config.token_secret_key, {
             expiresIn: 86400 // 24 hours
         });
         var resObj = {
-            loginData: {
-                loginStatus: true,
-                token: token,
-                message: "登录成功"
-            },
+            status: true,
+            message: "登录成功",
+            token: token,
             userData: {
                 userId: user._id,
                 userName: user.username,
@@ -65,18 +63,16 @@ exports.getLoginStatus = (req, res) => {
     .exec((err, user) => {
         if (err) {
             console.log(err);
-            res.status(500).send({ loginData: {loginStatus: false, message: err }});
+            res.status(500).send({ status: false, message: err });
             return;
         }
         if(!user) {
-            res.status(200).send({ loginData: {loginStatus: false, message: "用户不存在" }});
+            res.status(200).send({ status: false, message: "用户不存在" });
             return;
         }
         var resObj = {
-            loginData: {
-                loginStatus: true,
-                message: "登录成功"
-            },
+            status: true,
+            message: "登录成功",
             userData: {
                 userId: user._id,
                 userName: user.username,
@@ -103,10 +99,10 @@ exports.logout = (req, res) => {
     });
     invalidToken.save((err, doc) => {
         if(err) {
-            res.status(500).send({ logoutData: { logoutStatus: false, message: err }});
+            res.status(500).send({ status: false, message: err });
             return;
         }
-        res.status(200).send({ logoutData: { logoutStatus: true, message: "注销成功" }});
+        res.status(200).send({ status: true, message: "注销成功" });
     });
 };
 
@@ -123,10 +119,10 @@ exports.register = (req, res) => {
         user.encrypted_password = user.encryptPassword(req.body.password);
         user.save((err, user) => {
             if(err) {
-                res.status(500).send({registerData: {registerStatus: false, message: err}});
+                res.status(500).send({ status: false, message: err });
                 return;
             }
-            res.status(200).send({registerData:{ registerStatus: true, message: "注册成功"}});
+            res.status(200).send({ status: true, message: "注册成功" });
         });
     } else if(req.body.userPermission == 'doctor') {
         const doctor = new Doctor({
@@ -138,7 +134,7 @@ exports.register = (req, res) => {
         });
         doctor.save((err) => {
             if(err) {
-                res.status(500).send({registerData: {registerStatus: false, message: err}});
+                res.status(500).send({ status: false, message: err});
                 return;
             }
             const user = new User({
@@ -153,10 +149,10 @@ exports.register = (req, res) => {
 
             user.save((err) => {
                 if(err) {
-                    res.status(500).send({registerData: {registerStatus: false, message: err}});
+                    res.status(500).send({ status: false, message: err });
                     return;
                 }
-                res.status(200).send({registerData: {registerStatus: true, message: "注册成功"}});
+                res.status(200).send({ status: true, message: "注册成功" });
             });
         });
     }
@@ -188,24 +184,24 @@ exports.updateUserInfo = (req, res) => {
     } else if(req.permissionInToken == 'admin') {
         query = {'_id': req.body.userId};
     } else {
-        res.status(403).send({ updateData: { updateStatus: true, message: "无更新权限" }});
+        res.status(403).send({ status: false, message: "无更新权限" });
     }
     
     User.findOneAndUpdate(query, updateUserInfo, null, (err, user) => {
         if(err) {
-            res.status(500).send({ updateData: { updateStatus: false, message: err }});
+            res.status(500).send({ status: false, message: err });
             return;
         }
         if(needUpdateDoctor) {
             Doctor.findOneAndUpdate({ _id: user.doctor_id._id }, updateDoctorInfo, null, (err, user) => {
                 if(err) {
-                    res.status(500).send({ updateData: { updateStatus: false, message: err }});
+                    res.status(500).send({ status: false, message: err });
                     return;
                 }
-                res.status(200).send({ updateData: { updateStatus: true, message: "更新成功" }});
+                res.status(200).send({ status: true, message: "更新成功" });
             });
         } else {
-            res.status(200).send({ updateData: { updateStatus: true, message: "更新成功" }});
+            res.status(200).send({ status: true, message: "更新成功" });
         }
     });
 }
@@ -216,32 +212,32 @@ exports.updatePassword = (req, res) => {
     })
     .exec((err, user) => {
         if (err) {
-            res.status(500).send({ updateData: {updateStatus: false, message: err }});
+            res.status(500).send({ status: false, message: err });
             return;
         }
         if(!user) {
-            res.status(404).send({ updateData: {updateStatus: false, message: "用户不存在" }});
+            res.status(404).send({ status: false, message: "用户不存在" });
             return;
         }
         var isPasswordTrue = user.authenticate(req.body.oldPassword);
         if(!isPasswordTrue) {
-            res.status(401).send({ updateData: {updateStatus: false, message: "密码错误" }});
+            res.status(401).send({ status: false, message: "密码错误" });
             return;
         }
         user.encrypted_password = user.encryptPassword(req.body.newPassword);
         user.save((err) => {
             if(err) {
-                res.status(500).send({ updateData: { updateStatus: false, message: err }});
+                res.status(500).send({ status: false, message: err });
                 return;
             }
-            res.status(500).send({ updateData: { updateStatus: true, message: "更新成功" }});
+            res.status(500).send({ status: true, message: "更新成功" });
         });
     });
 }
 
 exports.queryNewDoctor = (req, res) => {
     if(req.permissionInToken != 'admin') {
-        res.status(403).send({ queryData: { queryStatus: false, message: "无查询权限" }});
+        res.status(403).send({ status: false, message: "无查询权限" });
         return;
     }
     User.find({
@@ -250,10 +246,10 @@ exports.queryNewDoctor = (req, res) => {
     .populate('doctor_id')
     .exec((err, users) => {
         if (err) {
-            res.status(500).send({ queryData: { queryStatus: false, message: err }});
+            res.status(500).send({ status: false, message: err });
             return;
         }
-        var resObj = [];
+        var doctors = [];
         for(var i = 0; i < users.length; i++) {
             var tmp = users[i];
             var tmpDoctor = {
@@ -266,7 +262,12 @@ exports.queryNewDoctor = (req, res) => {
                     zhicheng: tmp.doctor_id.rank
                 }
             }
-            resObj.push(tmpDoctor);
+            doctors.push(tmpDoctor);
+        }
+        var resObj = {
+            status: true,
+            message: '查询成功',
+            doctorInfo: doctors
         }
         res.status(200).send(resObj);
     });
@@ -274,18 +275,18 @@ exports.queryNewDoctor = (req, res) => {
 
 exports.approveNewDoctor = (req, res) => {
     if(req.permissionInToken != 'admin') {
-        res.status(403).send({ updateData: { updateStatus: false, message: "无更新权限" }});
+        res.status(403).send({ status: false, message: "无更新权限" });
         return;
     }
     User.updateMany(
         { _id: { $in: req.body.userId }},
-        { $set: {status: true }},
+        { $set: { status: true }},
         (err) => {
             if(err) {
-                res.status(500).send({ updateData: { updateStatus: false, message: err }});
+                res.status(500).send({ status: false, message: err });
                 return;
             }
-            res.status(200).send({ updateData: { updateStatus: true, message: "审核成功" }})
+            res.status(200).send({ status: true, message: "审核成功" })
         }
     )
 }
@@ -308,7 +309,7 @@ exports.queryDoctor = (req, res) => {
             return;
         }
         //console.log(users);
-        var resObj = [];
+        var doctors = [];
         for(var i = 0; i < users.length; i++) {
             var tmp = users[i];
             var tmpDoctor = {
@@ -317,7 +318,12 @@ exports.queryDoctor = (req, res) => {
                 keshi: req.body.keshi,
                 zhicheng: tmp.user_id.doctor_id.rank
             }
-            resObj.push(tmpDoctor);
+            doctors.push(tmpDoctor);
+        }
+        var resObj = {
+            status: true,
+            message: '查询成功',
+            doctorInfo: doctors 
         }
         res.status(200).send(resObj);
     });
@@ -335,9 +341,9 @@ exports.addAvailableDoctor = (req, res) => {
     });
     available.save((err, ava) => {
         if(err) {
-            res.status(500).send({registerData: {registerStatus: false, message: err}});
+            res.status(500).send({ status: false, message: err });
             return;
         }
-        res.status(200).send({registerData:{ registerStatus: true, message: "添加成功"}});
+        res.status(200).send({ status: true, message: "添加成功" });
     });
 }
