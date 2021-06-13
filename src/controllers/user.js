@@ -50,6 +50,10 @@ exports.login = (req, res) => {
             resObj.userData.userInfo.hospitalName = user.doctor_id.hospital_name;
             resObj.userData.userInfo.keshi = user.doctor_id.department;
             resObj.userData.userInfo.zhicheng = user.doctor_id.rank;
+            resObj.userData.userInfo.age = user.doctor_id.age;
+            resObj.userData.userInfo.workYears = user.doctor_id.work_years;
+            resObj.userData.userInfo.description = user.doctor_id.description;
+            resObj.userData.userInfo.avatar = user.doctor_id.avatar;
         }
         res.status(200).send(resObj);
     })
@@ -87,6 +91,10 @@ exports.getLoginStatus = (req, res) => {
             resObj.userData.userInfo.hospitalName = user.doctor_id.hospital_name;
             resObj.userData.userInfo.keshi = user.doctor_id.department;
             resObj.userData.userInfo.zhicheng = user.doctor_id.rank;
+            resObj.userData.userInfo.age = user.doctor_id.age;
+            resObj.userData.userInfo.workYears = user.doctor_id.work_years;
+            resObj.userData.userInfo.description = user.doctor_id.description;
+            resObj.userData.userInfo.avatar = user.doctor_id.avatar;
         }
         res.status(200).send(resObj);
     })
@@ -130,7 +138,10 @@ exports.register = (req, res) => {
             hospital_name: req.body.userInfo.hospitalName,
             department: req.body.userInfo.keshi,
             rank: req.body.userInfo.zhicheng,
-            description: ''
+            age: req.body.userInfo.age,
+            work_years: req.body.userInfo.workYears,
+            description: req.body.userInfo.description,
+            avatar: req.body.userInfo.avatar
         });
         doctor.save((err) => {
             if(err) {
@@ -158,6 +169,12 @@ exports.register = (req, res) => {
     }
 }
 
+exports.UploadImage = (req, res) => {
+    const { file: { filename, path } } = req;
+    console.log(filename);
+    res.status(200).send({ status: true, message: "上传成功", value: filename });
+}
+
 exports.updateUserInfo = (req, res) => {
     var reqInfo = req.body.userInfo;
     var updateUserInfo = {};
@@ -177,6 +194,22 @@ exports.updateUserInfo = (req, res) => {
     }
     if(reqInfo.hasOwnProperty('zhicheng')) {
         updateDoctorInfo.rank = reqInfo.zhicheng;
+        needUpdateDoctor = 1;
+    }
+    if(reqInfo.hasOwnProperty('age')) {
+        updateDoctorInfo.age = reqInfo.age;
+        needUpdateDoctor = 1;
+    }
+    if(reqInfo.hasOwnProperty('workYears')) {
+        updateDoctorInfo.work_years = reqInfo.workYears;
+        needUpdateDoctor = 1;
+    }
+    if(reqInfo.hasOwnProperty('description')) {
+        updateDoctorInfo.description = reqInfo.description;
+        needUpdateDoctor = 1;
+    }
+    if(reqInfo.hasOwnProperty('avatar')) {
+        updateDoctorInfo.avatar = reqInfo.avatar;
         needUpdateDoctor = 1;
     }
     if(req.body.userId === '') {
@@ -259,7 +292,11 @@ exports.queryNewDoctor = (req, res) => {
                     xingbie: tmp.gender,
                     hospitalName: tmp.doctor_id.hospital_name,
                     keshi: tmp.doctor_id.department,
-                    zhicheng: tmp.doctor_id.rank
+                    zhicheng: tmp.doctor_id.rank,
+                    age: tmp.doctor_id.age,
+                    workYears: tmp.doctor_id.work_years,
+                    description: tmp.doctor_id.description,
+                    avatar: tmp.doctor_id.avatar
                 }
             }
             doctors.push(tmpDoctor);
@@ -316,7 +353,12 @@ exports.queryDoctor = (req, res) => {
                 id: tmp.user_id._id,
                 name: tmp.user_id.username,
                 keshi: req.body.keshi,
-                zhicheng: tmp.user_id.doctor_id.rank
+                zhicheng: tmp.user_id.doctor_id.rank,
+                xingbie: tmp.user_id.doctor_id.gender,
+                age: tmp.user_id.doctor_id.age,
+                workYears: tmp.user_id.doctor_id.work_years,
+                description: tmp.user_id.doctor_id.description,
+                avatar: tmp.user_id.doctor_id.avatar
             }
             doctors.push(tmpDoctor);
         }

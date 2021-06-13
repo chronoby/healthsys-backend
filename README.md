@@ -33,6 +33,7 @@ router | get/post | function
 /doctor/query | post | queryDoctor
 /registration | post | createRegistration
 /registration | get | queryRegistrationInfo
+/image | post | UploadImage
 
 ## 身份认证
 

@@ -19,6 +19,7 @@ var userRouter = require('./routes/user');
 var doctorRouter = require('./routes/doctor');
 var registerRouter = require('./routes/register');
 var registrationRouter = require('./routes/registration');
+var imageRouter = require('./routes/image');
 const mongoose = require('mongoose');
 
 var app = express();
@@ -31,10 +32,11 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
   next();
 });
 
@@ -45,6 +47,8 @@ app.use('/register', registerRouter);
 app.use('/user', userRouter);
 app.use('/doctor', doctorRouter);
 app.use('/registration', registrationRouter);
+app.use('/image', imageRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

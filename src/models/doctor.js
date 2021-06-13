@@ -9,7 +9,10 @@ const DoctorSchema = new Schema({
     hospital_name: String,
     department: String,
     rank: String,
-    description: String
+    age: Number,
+    work_years: Number,
+    description: String,
+    avatar: String
 });
 
 var doctorModel = mongoose.model('doctor', DoctorSchema);
