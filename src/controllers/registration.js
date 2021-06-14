@@ -35,6 +35,11 @@ exports.queryRegistrationInfo = (req, res) => {
         query = { patient_id: req.idinToken };
     }
     Registration.find(query)
+    .populate({
+        path: 'doctor_id',
+        populate: {
+            path: 'doctor_id'
+        }})
     .exec((err, docs) => {
         if(err) {
             res.status(500).send({satus: false, message: err });
@@ -49,7 +54,9 @@ exports.queryRegistrationInfo = (req, res) => {
                 date: tmp.date,
                 wubie: tmp.period,
                 isSpecialist: tmp.is_specialist,
-                doctorId: tmp.doctor_id,
+                doctorId: tmp.doctor_id._id,
+                doctorName: tmp.doctor_id.username,
+                hospitalName: tmp.doctor_id.doctor_id.hospital_name,
                 isFinished: tmp.is_finished
             }
             regs.push(tmpdoc);

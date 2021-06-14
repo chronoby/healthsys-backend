@@ -181,8 +181,6 @@ exports.updateUserInfo = (req, res) => {
     var updateDoctorInfo = {};
     var needUpdateDoctor = 0;
     var query;
-    console.log(req.headers);
-    console.log(req.body);
     if(reqInfo.hasOwnProperty('xingbie')) {
         updateUserInfo.gender = reqInfo.xingbie;
     }
