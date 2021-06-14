@@ -31,6 +31,7 @@ router | get/post | function
 /doctor/new | get | queryNewDoctor
 /doctor/new | post | approveNewDoctor
 /doctor/query | post | queryDoctor
+/doctor/addtime | post | addAvailableDoctor
 /registration | post | createRegistration
 /registration | get | queryRegistrationInfo
 /image | post | UploadImage
