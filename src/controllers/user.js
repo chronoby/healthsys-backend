@@ -355,11 +355,12 @@ exports.queryDoctor = (req, res) => {
                 name: tmp.user_id.username,
                 keshi: req.body.keshi,
                 zhicheng: tmp.user_id.doctor_id.rank,
-                xingbie: tmp.user_id.doctor_id.gender,
+                xingbie: tmp.user_id.gender,
                 age: tmp.user_id.doctor_id.age,
                 workYears: tmp.user_id.doctor_id.work_years,
                 description: tmp.user_id.doctor_id.description,
-                avatar: tmp.user_id.doctor_id.avatar
+                avatar: tmp.user_id.doctor_id.avatar,
+                hospitalName: tmp.user_id.doctor_id.hospital_name
             }
             doctors.push(tmpDoctor);
         }
