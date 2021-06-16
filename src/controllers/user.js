@@ -9,14 +9,14 @@ const config = require('../../config/config');
 const jwt = require('jsonwebtoken');
 
 exports.login = (req, res) => {
-    console.log(req.body)
+    // console.log(req.body);
     User.findOne({
         _id: req.body.userId
     })
     .populate('doctor_id')
     .exec((err, user) => {
         if (err) {
-            console.log(err);
+            // console.log(err);
             res.status(500).send({ status: false, message: err });
             return;
         }
@@ -66,7 +66,7 @@ exports.getLoginStatus = (req, res) => {
     .populate('doctor_id')
     .exec((err, user) => {
         if (err) {
-            console.log(err);
+            // console.log(err);
             res.status(500).send({ status: false, message: err });
             return;
         }
@@ -115,7 +115,7 @@ exports.logout = (req, res) => {
 };
 
 exports.register = (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
     if(req.body.userPermission == 'user' || req.body.userPermission == 'admin') {
         const user = new User({
             _id: req.body.userId,
@@ -171,7 +171,7 @@ exports.register = (req, res) => {
 
 exports.UploadImage = (req, res) => {
     const { file: { filename, path } } = req;
-    console.log(filename);
+    // console.log(filename);
     res.status(200).send({ status: true, message: "上传成功", value: filename });
 }
 
@@ -389,5 +389,38 @@ exports.addAvailableDoctor = (req, res) => {
             return;
         }
         res.status(200).send({ status: true, message: "添加成功" });
+    });
+}
+
+exports.queryTime = (req, res) => {
+    if(req.permissionInToken != 'doctor') {
+        res.status(403).send({ status: false, message: "无查询权限" });
+        return;
+    }
+    AvailableDoctor.find({user_id: req.idinToken})
+    .exec((err, docs) => {
+        if(err) {
+            res.status(500).send({satus: false, message: err });
+            return;
+        }
+        var times = [];
+        for(var i = 0; i < docs.length; i++) {
+            var tmp = docs[i];
+            var tmpdoc = {
+                keshi: tmp.department,
+                date: tmp.date,
+                wubie: tmp.period,
+                number: tmp.left_count,
+                price: tmp.price,
+                isSpecialist: tmp.is_specialist
+            }
+            times.push(tmpdoc);
+        }
+        var resObj = {
+            status: true,
+		    message: "查询成功",
+		    timeInfo: times
+        }
+        res.status(200).send(resObj);
     });
 }

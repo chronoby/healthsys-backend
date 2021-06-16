@@ -32,8 +32,10 @@ router | get/post | function
 /doctor/new | post | approveNewDoctor
 /doctor/query | post | queryDoctor
 /doctor/addtime | post | addAvailableDoctor
+/doctor/time | get | queryTime
 /registration | post | createRegistration
 /registration | get | queryRegistrationInfo
+/registration/patient | post | queryPatientRegistration
 /image | post | UploadImage
 
 ## 身份认证
