@@ -4,88 +4,199 @@
  * Module dependencies.
  */
 
-var app = require('../src/server');
-var debug = require('debug')('app:server');
-var http = require('http');
-var cors = require('cors');
-
-/**
- * Get port from environment and store in Express.
- */
-
-var port = normalizePort(process.env.PORT || '8000');
-app.set('port', port);
-app.use(cors());
-/**
- * Create HTTP server.
- */
-
-var server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
-/**
- * Normalize a port into a number, string, or false.
- */
-
-function normalizePort(val) {
-  var port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
-  return false;
-}
-
-/**
- * Event listener for HTTP server "error" event.
- */
-
-function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
-
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
-
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
-}
-
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
-}
+ var app = require('../src/server');
+ var debug = require('debug')('app:server');
+ var http = require('http');
+ var cors = require('cors');
+ var express = require('express');
+ const WebSocket = require('ws');
+ const mongoose = require('mongoose');
+ const Message = mongoose.model('message');
+ 
+ /**
+  * Get port from environment and store in Express.
+  */
+ 
+ var port = normalizePort(process.env.PORT || '8000');
+ // app.set('port', port);
+ app.use(cors());
+ /**
+  * Create HTTP server.
+  */
+ 
+ var server = http.createServer();
+ 
+ /**
+  * Listen on provided port, on all network interfaces.
+  */
+ 
+ server.on('request', app);
+ 
+ // ws
+ const wss = new WebSocket.Server({ server: server, clientTracking: true});
+ 
+ wss.on('connection', function connection(ws) {
+     ws.isAlive = true;
+     ws.on('pong', heartbeat);
+     ws.on('message', function incoming(message) {
+         var obj = JSON.parse(message);
+         console.log(obj);
+         ws.id = obj.from;
+         if(obj.to === "")
+             return;
+         let exist = false;
+         wss.clients.forEach(function each(client) {
+             if(client.id == obj.to) {
+                 client.send(message);
+                 exist = true;
+                 return;
+             }
+         });
+         console.log(exist);
+         Message.findOneAndUpdate(
+             { _id: obj.from },
+             { $push: { message: { content: obj.message, opposite: obj.to, in_out: "out", time: Date.now(), sendStatus: exist } } },
+             null,
+             (err, user) => {
+                 if(err) {
+                     ws.send(JSON.stringify({ status: false, message: err }));
+                     return;
+                 }
+                 console.log(exist);
+ 
+                 if(!user) {
+                     const message = new Message({
+                         _id: obj.from,
+                         message: [{ content: obj.message, opposite: obj.to, in_out: "out", time: Date.now(), sendStatus: exist }]
+                     });
+                     message.save((err) => {
+                         if(err) {
+                             ws.send(JSON.stringify({ status: false, message: err }));
+                             return;
+                         }
+                     });
+                 }
+                 Message.findOneAndUpdate(
+                     { _id: obj.to },
+                     { $push: { message: { content: obj.message, opposite: obj.from, in_out: "in", time: Date.now(), sendStatus: exist } } },
+                     null,
+                     (err, user) => {
+                         if(err) {
+                             ws.send(JSON.stringify({ status: false, message: err }));
+                             return;
+                         }
+                         if(!user) {
+                             const message = new Message({
+                                 _id: obj.to,
+                                 message: [{ content: obj.message, opposite: obj.from, in_out: "in", time: Date.now(), sendStatus: exist }]
+                             });
+                             message.save((err) => {
+                                 if(err) {
+                                     ws.send(JSON.stringify({ status: false, message: err }));
+                                     return;
+                                 }
+                             });
+                         }
+                         ws.send(JSON.stringify({ status: true, message: "发送成功" }));
+                     }
+                 );
+             }
+         );
+     });
+ });
+ 
+ function noop() {}
+ 
+ function heartbeat() {
+     this.isAlive = true;
+ }
+ 
+ const interval = setInterval(function ping() {
+     wss.clients.forEach(function each(ws) {
+         if (ws.isAlive === false) return ws.terminate();
+     
+         ws.isAlive = false;
+         ws.ping(noop);
+     });
+ }, 10000);
+   
+ wss.on('close', function close() {
+     clearInterval(interval);
+ });
+ 
+ // setInterval(function() { 
+ //     wss.clients.forEach(function each(client) {
+ //         console.log(client.id);
+ //     });
+ // }, 1000);
+ 
+ // wss.on("data", function(client, str) {
+ //     var obj = JSON.parse(str);
+ 
+ //     clients[obj.id] = client;
+ // });
+ 
+ server.on('error', onError);
+ server.on('listening', onListening);
+ 
+ server.listen(port);
+ /**
+  * Normalize a port into a number, string, or false.
+  */
+ 
+ function normalizePort(val) {
+   var port = parseInt(val, 10);
+ 
+   if (isNaN(port)) {
+     // named pipe
+     return val;
+   }
+ 
+   if (port >= 0) {
+     // port number
+     return port;
+   }
+ 
+   return false;
+ }
+ 
+ /**
+  * Event listener for HTTP server "error" event.
+  */
+ 
+ function onError(error) {
+   if (error.syscall !== 'listen') {
+     throw error;
+   }
+ 
+   var bind = typeof port === 'string'
+     ? 'Pipe ' + port
+     : 'Port ' + port;
+ 
+   // handle specific listen errors with friendly messages
+   switch (error.code) {
+     case 'EACCES':
+       console.error(bind + ' requires elevated privileges');
+       process.exit(1);
+       break;
+     case 'EADDRINUSE':
+       console.error(bind + ' is already in use');
+       process.exit(1);
+       break;
+     default:
+       throw error;
+   }
+ }
+ 
+ /**
+  * Event listener for HTTP server "listening" event.
+  */
+ 
+ function onListening() {
+   var addr = server.address();
+   var bind = typeof addr === 'string'
+     ? 'pipe ' + addr
+     : 'port ' + addr.port;
+   debug('Listening on ' + bind);
+ }
+ 
