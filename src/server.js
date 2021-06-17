@@ -11,6 +11,7 @@ require('./models/doctor');
 require('./models/availableDoctor');
 require('./models/registration')
 require('./models/blacklist')
+require('./models/message');
 
 var indexRouter = require('./routes/index');
 var loginRouter = require('./routes/login');
@@ -20,6 +21,7 @@ var doctorRouter = require('./routes/doctor');
 var registerRouter = require('./routes/register');
 var registrationRouter = require('./routes/registration');
 var imageRouter = require('./routes/image');
+var messageRouter = require('./routes/message');
 const mongoose = require('mongoose');
 
 var app = express();
@@ -48,7 +50,7 @@ app.use('/user', userRouter);
 app.use('/doctor', doctorRouter);
 app.use('/registration', registrationRouter);
 app.use('/image', imageRouter);
-
+app.use('/chat', messageRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
