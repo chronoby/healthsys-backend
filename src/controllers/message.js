@@ -63,3 +63,33 @@ exports.queryAllDoctor = (req, res) => {
         res.status(200).send(resObj);
     });
 }
+
+exports.queryAllPatient = (req, res) => {
+    User.find({
+        type: "user"
+    })
+    .exec((err, users) => {
+        if (err) {
+            res.status(500).send({ status: false, message: err });
+            return;
+        }
+        var patients = [];
+        for(var i = 0; i < users.length; i++) {
+            var tmp = users[i];
+            var tmpPatient = {
+                userId: tmp._id,
+                userName: tmp.username,
+                userInfo: {
+                    xingbie: tmp.gender
+                }
+            }
+            patients.push(tmpPatient);
+        }
+        var resObj = {
+            status: true,
+            message: '查询成功',
+            userInfo: patients
+        }
+        res.status(200).send(resObj);
+    });
+}
