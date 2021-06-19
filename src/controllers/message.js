@@ -17,10 +17,14 @@ exports.getMessage = (req, res) => {
             res.status(200).send({ status: false, message: "用户不存在" });
             return;
         }
+        var messs = [];
+        for(var i = docs.message.length - 1; i >= 0 && i >= docs.message.length - 30; i--) {
+            messs.push(docs.message[i]);
+        }
         var resObj = {
             status: true,
             message: "查询成功",
-            messageData: docs.message
+            messageData: messs
         };
         res.status(200).send(resObj);
     })
