@@ -264,7 +264,7 @@ exports.updatePassword = (req, res) => {
                 res.status(500).send({ status: false, message: err });
                 return;
             }
-            res.status(500).send({ status: true, message: "更新成功" });
+            res.status(200).send({ status: true, message: "更新成功" });
         });
     });
 }
