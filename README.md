@@ -32,6 +32,7 @@ router | get/post | function
 /doctor/new | post | approveNewDoctor
 /doctor/query | post | queryDoctor
 /doctor/addtime | post | addAvailableDoctor
+/doctor/deletetime | post | deleteTime
 /doctor/time | get | queryTime
 /registration | post | createRegistration
 /registration | get | queryRegistrationInfo

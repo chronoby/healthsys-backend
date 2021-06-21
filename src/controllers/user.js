@@ -392,6 +392,30 @@ exports.addAvailableDoctor = (req, res) => {
     });
 }
 
+exports.deleteTime = (req, res) => {
+    if(req.permissionInToken != 'doctor') {
+        res.status(403).send({ status: false, message: "无查询权限" });
+        return;
+    }
+    var query = {
+        user_id: req.body.userId,
+        department: req.body.keshi,
+        date: req.body.date,
+        period: req.body.wubie,
+        left_count: req.body.number,
+        price: req.body.price,
+        is_specialist: req.body.isSpecialist
+    };
+    console.log(query);
+    AvailableDoctor.findOneAndDelete(query, (err, user) => {
+        if(err) {
+            res.status(500).send({ status: false, message: err });
+            return;
+        }
+        res.status(200).send({ status: true, message: "删除成功" });
+    });
+}
+
 exports.queryTime = (req, res) => {
     if(req.permissionInToken != 'doctor') {
         res.status(403).send({ status: false, message: "无查询权限" });
