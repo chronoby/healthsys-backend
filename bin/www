@@ -133,11 +133,11 @@ wss.on('close', function close() {
     clearInterval(interval);
 });
 
-// setInterval(function() { 
-//     wss.clients.forEach(function each(client) {
-//         console.log(client.id);
-//     });
-// }, 1000);
+setInterval(function() { 
+    wss.clients.forEach(function each(client) {
+        console.log(client.id);
+    });
+}, 1000);
 
 // wss.on("data", function(client, str) {
 //     var obj = JSON.parse(str);

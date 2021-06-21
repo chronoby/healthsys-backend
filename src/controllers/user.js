@@ -374,7 +374,7 @@ exports.queryDoctor = (req, res) => {
 }
 
 exports.addAvailableDoctor = (req, res) => {
-    const available = new AvailableDoctor({
+    var query = {
         user_id: req.body.userId,
         department: req.body.keshi,
         date: req.body.date,
@@ -382,13 +382,34 @@ exports.addAvailableDoctor = (req, res) => {
         left_count: req.body.number,
         price: req.body.price,
         is_specialist: req.body.isSpecialist
-    });
-    available.save((err, ava) => {
+    };
+    AvailableDoctor.findOne(query)
+    .exec((err, user) => {
         if(err) {
-            res.status(500).send({ status: false, message: err });
+            res.status(500).send({satus: false, message: err });
             return;
         }
-        res.status(200).send({ status: true, message: "添加成功" });
+        console.log(user);
+        if(!(user == null)) {
+            res.status(200).send({ status: false, message: "数据重复" });
+            return;
+        }
+        const available = new AvailableDoctor({
+            user_id: req.body.userId,
+            department: req.body.keshi,
+            date: req.body.date,
+            period: req.body.wubie,
+            left_count: req.body.number,
+            price: req.body.price,
+            is_specialist: req.body.isSpecialist
+        });
+        available.save((err, ava) => {
+            if(err) {
+                res.status(500).send({ status: false, message: err });
+                return;
+            }
+            res.status(200).send({ status: true, message: "添加成功" });
+        });
     });
 }
 
