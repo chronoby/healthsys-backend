@@ -42,8 +42,10 @@ wss.on('connection', function connection(ws) {
         var obj = JSON.parse(message);
         console.log(obj);
         ws.id = obj.from;
-        if(obj.to == "")
+        if(obj.to == "") {
+            ws.send(JSON.stringify({ status: true, message: "连接成功" }));
             return;
+        }
         if(obj.to == "server") {
             var client_list = [];
             wss.clients.forEach(function each(client) {
