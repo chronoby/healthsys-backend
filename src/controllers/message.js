@@ -13,11 +13,16 @@ exports.getMessage = (req, res) => {
             res.status(500).send({ status: false, message: err });
             return;
         }
+        var messs = [];
         if(!docs) {
-            res.status(200).send({ status: false, message: "用户不存在" });
+            var resObj = {
+                status: true,
+                message: "查询成功",
+                messageData: messs
+            };
+            res.status(200).send(resObj);
             return;
         }
-        var messs = [];
         for(var i = docs.message.length - 1; i >= 0 && i >= docs.message.length - 30; i--) {
             messs.push(docs.message[i]);
         }

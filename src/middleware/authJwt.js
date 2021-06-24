@@ -19,6 +19,7 @@ verifyToken = (req, res, next) => {
             return;
         }
         req.idinToken = decoded.id;
+        console.log(decoded.id);
         next();
     });
 }
